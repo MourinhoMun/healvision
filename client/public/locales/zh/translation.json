@@ -1,0 +1,135 @@
+{
+  "app": {
+    "title": "HealVision AI",
+    "subtitle": "康复视界"
+  },
+  "nav": {
+    "home": "首页",
+    "workbench": "工作台",
+    "textToImage": "文本生成",
+    "reverseEngineer": "倒推模式",
+    "caseLibrary": "案例库",
+    "settings": "设置"
+  },
+  "home": {
+    "title": "案例列表",
+    "newCase": "新建案例",
+    "noCases": "暂无案例，点击上方按钮创建",
+    "presentation": "演示模式",
+    "sourceImages": "张底图",
+    "generatedImages": "张生成图"
+  },
+  "case": {
+    "name": "案例名称",
+    "namePlaceholder": "例如：Case-001",
+    "surgeryType": "手术类型",
+    "customSurgery": "自定义手术名称",
+    "description": "描述",
+    "bodyPart": "手术部位",
+    "gender": "性别",
+    "ageRange": "年龄段",
+    "ethnicity": "人种",
+    "bodyType": "体态",
+    "create": "创建",
+    "update": "更新",
+    "delete": "删除",
+    "deleteConfirm": "确定要删除此案例吗？所有相关图片都将被删除。",
+    "edit": "编辑"
+  },
+  "workbench": {
+    "timeline": "时间轴",
+    "sourceImage": "底图",
+    "noSource": "当前日期无底图",
+    "uploadSource": "上传底图",
+    "promptEditor": "提示词编辑",
+    "promptPlaceholder": "AI 生成的提示词将显示在这里，您可以手动编辑...",
+    "analyze": "分析图片",
+    "analyzing": "分析中...",
+    "generate": "生成图片",
+    "reroll": "重新生成",
+    "download": "下载",
+    "result": "生成结果",
+    "noResult": "点击生成按钮开始",
+    "history": "历史记录",
+    "protectionZone": "保护区",
+    "drawZone": "绘制保护区",
+    "clearZones": "清除保护区",
+    "cloneFromImage": "以此为底图新建案例",
+    "confirmClone": "确定要以此图为基础创建新案例吗？",
+    "day": "Day"
+  },
+  "textToImage": {
+    "title": "文本生成图像",
+    "surgeryType": "手术类型",
+    "dayNumber": "术后天数",
+    "gender": "性别",
+    "ageRange": "年龄段",
+    "ethnicity": "人种",
+    "bodyType": "体态",
+    "complications": "并发症",
+    "complicationsPlaceholder": "例如：轻微红肿",
+    "generatePrompt": "生成提示词",
+    "generate": "生成图像"
+  },
+  "viewer": {
+    "title": "演示模式",
+    "exit": "退出演示",
+    "noImages": "无生成图片可展示",
+    "selectCase": "选择一个案例开始演示"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "watermark": "启用隐形水印",
+    "developer": {
+      "title": "开发者设置",
+      "unlock": "输入开发者密码",
+      "password": "密码",
+      "verify": "验证",
+      "apiEndpoint": "API 端点",
+      "apiKey": "API 密钥",
+      "newPassword": "新密码",
+      "save": "保存配置",
+      "saved": "配置已保存"
+    }
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "delete": "删除",
+    "upload": "上传",
+    "loading": "加载中...",
+    "error": "出错了",
+    "success": "操作成功",
+    "noData": "暂无数据",
+    "select": "请选择"
+  },
+  "surgery": {
+    "double_eyelid": "双眼皮",
+    "eye_bag_removal": "祛眼袋",
+    "rhinoplasty": "隆鼻",
+    "liposuction": "吸脂",
+    "facelift": "拉皮",
+    "breast_augmentation": "隆胸",
+    "otoplasty": "耳整形",
+    "custom": "自定义"
+  },
+  "bodyType": {
+    "slim": "较瘦",
+    "normal": "正常",
+    "curvy": "丰满",
+    "plus_size": "大码"
+  },
+  "gender": {
+    "female": "女",
+    "male": "男"
+  },
+  "ethnicity": {
+    "asian": "亚洲",
+    "caucasian": "欧美",
+    "african": "非洲",
+    "hispanic": "拉美",
+    "other": "其他"
+  }
+}

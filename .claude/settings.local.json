@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:yunwu.apifox.cn)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(python -c:*)"
+    ]
+  }
+}

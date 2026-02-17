@@ -1,0 +1,132 @@
+{
+  "app": {
+    "title": "HealVision AI",
+    "subtitle": "Recovery Vision"
+  },
+  "nav": {
+    "home": "Home",
+    "workbench": "Workbench",
+    "textToImage": "Text to Image",
+    "reverseEngineer": "Reverse Engineer",
+    "caseLibrary": "Case Library",
+    "settings": "Settings"
+  },
+  "home": {
+    "title": "Cases",
+    "newCase": "New Case",
+    "noCases": "No cases yet. Click the button above to create one.",
+    "presentation": "Presentation Mode",
+    "sourceImages": "source images",
+    "generatedImages": "generated images"
+  },
+  "case": {
+    "name": "Case Name",
+    "namePlaceholder": "e.g., Case-001",
+    "surgeryType": "Surgery Type",
+    "customSurgery": "Custom Surgery Name",
+    "description": "Description",
+    "bodyPart": "Body Part",
+    "gender": "Gender",
+    "ageRange": "Age Range",
+    "ethnicity": "Ethnicity",
+    "bodyType": "Body Type",
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this case? All related images will be removed."
+  },
+  "workbench": {
+    "timeline": "Timeline",
+    "sourceImage": "Source Image",
+    "noSource": "No source image for this day",
+    "uploadSource": "Upload Source",
+    "promptEditor": "Prompt Editor",
+    "promptPlaceholder": "AI-generated prompt will appear here. You can edit it manually...",
+    "analyze": "Analyze Image",
+    "analyzing": "Analyzing...",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "reroll": "Re-roll",
+    "download": "Download",
+    "result": "Generated Result",
+    "noResult": "Click Generate to start",
+    "history": "History",
+    "protectionZone": "Protection Zone",
+    "drawZone": "Draw Zone",
+    "clearZones": "Clear Zones",
+    "day": "Day"
+  },
+  "textToImage": {
+    "title": "Text to Image",
+    "surgeryType": "Surgery Type",
+    "dayNumber": "Recovery Day",
+    "gender": "Gender",
+    "ageRange": "Age Range",
+    "ethnicity": "Ethnicity",
+    "bodyType": "Body Type",
+    "complications": "Complications",
+    "complicationsPlaceholder": "e.g., mild swelling",
+    "generatePrompt": "Generate Prompt",
+    "generate": "Generate Image"
+  },
+  "viewer": {
+    "title": "Presentation Mode",
+    "exit": "Exit Presentation",
+    "noImages": "No generated images to display",
+    "selectCase": "Select a case to start presentation"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "watermark": "Enable Invisible Watermark",
+    "developer": {
+      "title": "Developer Settings",
+      "unlock": "Enter Developer Password",
+      "password": "Password",
+      "verify": "Verify",
+      "apiEndpoint": "API Endpoint",
+      "apiKey": "API Key",
+      "newPassword": "New Password",
+      "save": "Save Configuration",
+      "saved": "Configuration Saved"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "upload": "Upload",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Operation successful",
+    "noData": "No data"
+  },
+  "surgery": {
+    "double_eyelid": "Double Eyelid",
+    "eye_bag_removal": "Eye Bag Removal",
+    "rhinoplasty": "Rhinoplasty",
+    "liposuction": "Liposuction",
+    "facelift": "Facelift",
+    "breast_augmentation": "Breast Augmentation",
+    "otoplasty": "Otoplasty",
+    "custom": "Custom"
+  },
+  "bodyType": {
+    "slim": "Slim",
+    "normal": "Normal",
+    "curvy": "Curvy",
+    "plus_size": "Plus Size"
+  },
+  "gender": {
+    "female": "Female",
+    "male": "Male"
+  },
+  "ethnicity": {
+    "asian": "Asian",
+    "caucasian": "Caucasian",
+    "african": "African",
+    "hispanic": "Hispanic",
+    "other": "Other"
+  }
+}
