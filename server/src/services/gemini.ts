@@ -47,11 +47,13 @@ function extractInlineData(part: GeminiResponsePart): { mimeType: string; data: 
   return undefined;
 }
 
-function getApiConfig(): { endpoint: string; key: string } {
+function getApiConfig(forAnalyze = false): { endpoint: string; key: string } {
   const endpointRow = queryOne('SELECT value FROM settings WHERE key = ?', ['api_endpoint']) as { value: string } | undefined;
   const keyRow = queryOne('SELECT value, encrypted FROM settings WHERE key = ?', ['api_key']) as { value: string; encrypted: number } | undefined;
 
-  const endpoint = endpointRow?.value || config.defaultApiEndpoint;
+  // For analyze (text output), use vision model; for generate, use image generation model
+  const defaultEndpoint = forAnalyze ? config.defaultAnalyzeEndpoint : config.defaultApiEndpoint;
+  const endpoint = endpointRow?.value || defaultEndpoint;
   let key = '';
   if (keyRow?.value) {
     key = keyRow.encrypted ? decryptString(keyRow.value) : keyRow.value;
@@ -61,8 +63,8 @@ function getApiConfig(): { endpoint: string; key: string } {
   return { endpoint, key };
 }
 
-async function callGemini(parts: GeminiRequestPart[], responseModalities?: string[]): Promise<GeminiResponse> {
-  const { endpoint, key } = getApiConfig();
+async function callGemini(parts: GeminiRequestPart[], responseModalities?: string[], forAnalyze = false): Promise<GeminiResponse> {
+  const { endpoint, key } = getApiConfig(forAnalyze);
 
   if (!key) {
     throw new Error('API key not configured. Please set it in developer settings.');
@@ -123,7 +125,7 @@ Do NOT describe the person's identity (face shape, eye details, etc.) — only n
     { inlineData: { mimeType, data: imageBase64 } },
   ];
 
-  const result = await callGemini(parts);
+  const result = await callGemini(parts, undefined, true);
   const text = result.candidates?.[0]?.content?.parts?.find(p => p.text)?.text;
   if (!text) throw new Error('No analysis result returned from AI');
   return text;
