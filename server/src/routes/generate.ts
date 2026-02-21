@@ -9,8 +9,11 @@ import { decrypt } from '../services/encryption.js';
 import fs from 'fs';
 import type { AnalyzeRequest, GenerateRequest, TextToImageRequest } from '@healvision/shared';
 import { licenseCheck } from '../middleware/licenseCheck.js';
+import { userAuth } from '../middleware/userAuth.js';
 
 const router = Router();
+
+router.use(userAuth);
 
 // Analyze source image → return prompt
 router.post('/analyze', licenseCheck('healvision_analyze', 2), async (req, res, next) => {
@@ -66,9 +69,9 @@ router.post('/generate', licenseCheck('healvision_generate', 10), async (req, re
     const imageId = uuid();
 
     const watermarkEnabled = queryOne("SELECT value FROM settings WHERE key = 'watermark_enabled'") as any;
-    let imageBuffer = Buffer.from(result.imageBase64, 'base64');
+    let imageBuffer: Buffer = Buffer.from(result.imageBase64, 'base64');
     if (watermarkEnabled?.value === '1') {
-      imageBuffer = await embedWatermark(imageBuffer, `${body.case_id}|${Date.now()}`);
+      imageBuffer = await embedWatermark(imageBuffer, `${body.case_id}|${Date.now()}`) as Buffer;
     }
 
     // Save to disk
@@ -104,10 +107,10 @@ router.post('/generate/text-to-image', licenseCheck('healvision_generate', 10), 
 
     const imageId = uuid();
 
-    let imageBuffer = Buffer.from(result.imageBase64, 'base64');
+    let imageBuffer: Buffer = Buffer.from(result.imageBase64, 'base64');
     const watermarkEnabled = queryOne("SELECT value FROM settings WHERE key = 'watermark_enabled'") as any;
     if (watermarkEnabled?.value === '1') {
-      imageBuffer = await embedWatermark(imageBuffer, `text2img|${Date.now()}`);
+      imageBuffer = await embedWatermark(imageBuffer, `text2img|${Date.now()}`) as Buffer;
     }
 
     const saved = await saveGeneratedImage(imageBuffer.toString('base64'), result.mimeType, imageId);
@@ -138,7 +141,7 @@ router.post('/generate/reverse', licenseCheck('healvision_generate', 10), async 
     // First analyze the target image
     const targetAnalysis = await analyzeImage(target_image_base64, target_mime_type, surgery_type);
 
-    const results = [];
+    const results: any[] = [];
 
     for (const day of days) {
       const isPreOp = day < 0;
@@ -147,11 +150,11 @@ router.post('/generate/reverse', licenseCheck('healvision_generate', 10), async 
       const result = await generateImage(prompt, target_image_base64, target_mime_type);
 
       const imageId = uuid();
-      let imageBuffer = Buffer.from(result.imageBase64, 'base64');
+      let imageBuffer: Buffer = Buffer.from(result.imageBase64, 'base64');
 
       const watermarkEnabled = queryOne("SELECT value FROM settings WHERE key = 'watermark_enabled'") as any;
       if (watermarkEnabled?.value === '1') {
-        imageBuffer = await embedWatermark(imageBuffer, `reverse|${case_id}|${Date.now()}`);
+        imageBuffer = await embedWatermark(imageBuffer, `reverse|${case_id}|${Date.now()}`) as Buffer;
       }
 
       const saved = await saveGeneratedImage(imageBuffer.toString('base64'), result.mimeType, imageId);

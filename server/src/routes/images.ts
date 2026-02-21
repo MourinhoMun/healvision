@@ -6,14 +6,15 @@ import { queryAll, queryOne, run } from '../db/wrapper.js';
 import { encrypt, decrypt } from '../services/encryption.js';
 import { processImage } from '../services/imageProcessor.js';
 import { upload } from '../middleware/upload.js';
+import { userAuth } from '../middleware/userAuth.js';
 import { config } from '../config.js';
 
 const router = Router();
 
 // Upload source images to a case
-router.post('/cases/:caseId/images', upload.array('images', 20), async (req, res, next) => {
+router.post('/cases/:caseId/images', userAuth, upload.array('images', 20), async (req, res, next) => {
   try {
-    const caseRow = queryOne('SELECT id FROM cases WHERE id = ?', [req.params.caseId]);
+    const caseRow = queryOne('SELECT id FROM cases WHERE id = ? AND user_id = ?', [req.params.caseId, req.userId]);
     if (!caseRow) {
       res.status(404).json({ error: 'Case not found' });
       return;
@@ -26,7 +27,7 @@ router.post('/cases/:caseId/images', upload.array('images', 20), async (req, res
     }
 
     const dayNumber = parseInt(req.body.day_number || '0', 10);
-    const results = [];
+    const results: any[] = [];
 
     for (const file of files) {
       const id = uuid();

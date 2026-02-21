@@ -39,12 +39,11 @@ async function main() {
   // Error handler
   app.use(errorHandler);
 
-  // In production, serve client static files
+  // In production, serve client static files under /healvision/
   const clientDistPath = path.resolve(__dirname, '../../client/dist');
   if (fs.existsSync(clientDistPath)) {
-    app.use(express.static(clientDistPath));
-    // SPA fallback: serve index.html for all non-API routes
-    app.get('/{*splat}', (_req, res) => {
+    app.use('/healvision', express.static(clientDistPath));
+    app.get('/healvision/{*splat}', (_req, res) => {
       res.sendFile(path.join(clientDistPath, 'index.html'));
     });
     console.log(`Serving client from ${clientDistPath}`);

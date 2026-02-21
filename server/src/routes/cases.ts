@@ -1,19 +1,23 @@
 import { Router } from 'express';
 import { v4 as uuid } from 'uuid';
 import { queryAll, queryOne, run } from '../db/wrapper.js';
+import { userAuth } from '../middleware/userAuth.js';
 import type { CreateCaseRequest } from '@healvision/shared';
 
 const router = Router();
 
-// List all cases
-router.get('/', (_req, res) => {
+router.use(userAuth);
+
+// List all cases for current user
+router.get('/', (req, res) => {
   const cases = queryAll(`
     SELECT c.*,
       (SELECT COUNT(*) FROM source_images WHERE case_id = c.id) as source_image_count,
       (SELECT COUNT(*) FROM generated_images WHERE case_id = c.id) as generated_image_count
     FROM cases c
+    WHERE c.user_id = ?
     ORDER BY c.updated_at DESC
-  `);
+  `, [req.userId]);
 
   const result = cases.map((c: any) => ({
     ...c,
@@ -27,9 +31,9 @@ router.get('/', (_req, res) => {
   res.json(result);
 });
 
-// Get single case with images
+// Get single case (must belong to user)
 router.get('/:id', (req, res) => {
-  const caseRow = queryOne('SELECT * FROM cases WHERE id = ?', [req.params.id]);
+  const caseRow = queryOne('SELECT * FROM cases WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
   if (!caseRow) {
     res.status(404).json({ error: 'Case not found' });
     return;
@@ -39,12 +43,10 @@ router.get('/:id', (req, res) => {
     'SELECT * FROM source_images WHERE case_id = ? ORDER BY day_number ASC, sort_order ASC',
     [req.params.id]
   );
-
   const generatedImages = queryAll(
     'SELECT * FROM generated_images WHERE case_id = ? ORDER BY day_number ASC, created_at DESC',
     [req.params.id]
   );
-
   const tags = queryAll(
     'SELECT t.* FROM tags t JOIN case_tags ct ON ct.tag_id = t.id WHERE ct.case_id = ?',
     [req.params.id]
@@ -59,11 +61,11 @@ router.post('/', (req, res) => {
   const id = uuid();
 
   run(`
-    INSERT INTO cases (id, name, surgery_type, surgery_type_custom, description, body_part,
+    INSERT INTO cases (id, user_id, name, surgery_type, surgery_type_custom, description, body_part,
       patient_gender, patient_age_range, patient_ethnicity, patient_body_type)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
-    id, body.name, body.surgery_type || null, body.surgery_type_custom || null,
+    id, req.userId, body.name, body.surgery_type || null, body.surgery_type_custom || null,
     body.description || null, body.body_part || null, body.patient_gender || null,
     body.patient_age_range || null, body.patient_ethnicity || null, body.patient_body_type || null,
   ]);
@@ -74,7 +76,7 @@ router.post('/', (req, res) => {
 
 // Update case
 router.put('/:id', (req, res) => {
-  const existing = queryOne('SELECT * FROM cases WHERE id = ?', [req.params.id]);
+  const existing = queryOne('SELECT * FROM cases WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
   if (!existing) {
     res.status(404).json({ error: 'Case not found' });
     return;
@@ -85,21 +87,20 @@ router.put('/:id', (req, res) => {
     UPDATE cases SET name = ?, surgery_type = ?, surgery_type_custom = ?, description = ?,
       body_part = ?, patient_gender = ?, patient_age_range = ?, patient_ethnicity = ?,
       patient_body_type = ?, updated_at = datetime('now')
-    WHERE id = ?
+    WHERE id = ? AND user_id = ?
   `, [
     body.name, body.surgery_type || null, body.surgery_type_custom || null,
     body.description || null, body.body_part || null, body.patient_gender || null,
     body.patient_age_range || null, body.patient_ethnicity || null,
-    body.patient_body_type || null, req.params.id,
+    body.patient_body_type || null, req.params.id, req.userId,
   ]);
 
-  const updated = queryOne('SELECT * FROM cases WHERE id = ?', [req.params.id]);
-  res.json(updated);
+  res.json(queryOne('SELECT * FROM cases WHERE id = ?', [req.params.id]));
 });
 
 // Delete case
 router.delete('/:id', (req, res) => {
-  const result = run('DELETE FROM cases WHERE id = ?', [req.params.id]);
+  const result = run('DELETE FROM cases WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
   if (result.changes === 0) {
     res.status(404).json({ error: 'Case not found' });
     return;
@@ -109,36 +110,30 @@ router.delete('/:id', (req, res) => {
 
 // Clone case from image
 router.post('/clone-from-image/:imageId', (req, res) => {
-  const imageId = req.params.imageId;
-
-  // 1. Get the source image and its case details
-  const sourceImage = queryOne('SELECT * FROM source_images WHERE id = ?', [imageId]) as any;
+  const sourceImage = queryOne(`
+    SELECT si.* FROM source_images si
+    JOIN cases c ON c.id = si.case_id
+    WHERE si.id = ? AND c.user_id = ?
+  `, [req.params.imageId, req.userId]) as any;
   if (!sourceImage) {
     res.status(404).json({ error: 'Source image not found' });
     return;
   }
 
   const originalCase = queryOne('SELECT * FROM cases WHERE id = ?', [sourceImage.case_id]) as any;
-  if (!originalCase) {
-    res.status(404).json({ error: 'Original case not found' });
-    return;
-  }
-
-  // 2. Create new case
   const newCaseId = uuid();
-  const newCaseName = `${originalCase.name} (Copy)`;
 
   run(`
-    INSERT INTO cases (id, name, surgery_type, surgery_type_custom, description, body_part,
+    INSERT INTO cases (id, user_id, name, surgery_type, surgery_type_custom, description, body_part,
       patient_gender, patient_age_range, patient_ethnicity, patient_body_type)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
-    newCaseId, newCaseName, originalCase.surgery_type, originalCase.surgery_type_custom,
-    originalCase.description, originalCase.body_part, originalCase.patient_gender,
-    originalCase.patient_age_range, originalCase.patient_ethnicity, originalCase.patient_body_type,
+    newCaseId, req.userId, `${originalCase.name} (Copy)`, originalCase.surgery_type,
+    originalCase.surgery_type_custom, originalCase.description, originalCase.body_part,
+    originalCase.patient_gender, originalCase.patient_age_range,
+    originalCase.patient_ethnicity, originalCase.patient_body_type,
   ]);
 
-  // 3. Duplicate the image record (but point to same file path to save space)
   const newImageId = uuid();
   run(`
     INSERT INTO source_images (id, case_id, file_path, thumbnail_path, day_number,
@@ -147,11 +142,10 @@ router.post('/clone-from-image/:imageId', (req, res) => {
   `, [
     newImageId, newCaseId, sourceImage.file_path, sourceImage.thumbnail_path,
     sourceImage.day_number, sourceImage.original_filename, sourceImage.exif_date,
-    sourceImage.mime_type, sourceImage.width, sourceImage.height, sourceImage.protection_zones
+    sourceImage.mime_type, sourceImage.width, sourceImage.height, sourceImage.protection_zones,
   ]);
 
-  const newCase = queryOne('SELECT * FROM cases WHERE id = ?', [newCaseId]);
-  res.status(201).json(newCase);
+  res.status(201).json(queryOne('SELECT * FROM cases WHERE id = ?', [newCaseId]));
 });
 
 export default router;
