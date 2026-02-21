@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/authStore';
 
 export function ActivationPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,19 +17,27 @@ export function ActivationPage() {
     try {
       await activate(code.trim());
     } catch (err: any) {
-      setError(err.message || '激活失败，请检查激活码是否正确');
+      setError(err.message || t('activation.error'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleActivate();
-  };
+  const isZh = i18n.language.startsWith('zh');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        {/* Lang switch */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => i18n.changeLanguage(isZh ? 'en' : 'zh')}
+            className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded px-2 py-1"
+          >
+            {isZh ? 'English' : '中文'}
+          </button>
+        </div>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
@@ -44,7 +52,7 @@ export function ActivationPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              请输入激活码
+              {t('activation.label')}
             </label>
             <div className="relative">
               <KeyRound size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -52,8 +60,8 @@ export function ActivationPage() {
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="输入激活码或充值码..."
+                onKeyDown={(e) => e.key === 'Enter' && handleActivate()}
+                placeholder={t('activation.placeholder')}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 autoFocus
               />
@@ -73,14 +81,14 @@ export function ActivationPage() {
             className="w-full flex items-center justify-center gap-2 py-3 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <KeyRound size={16} />}
-            激活
+            {t('activation.submit')}
           </button>
         </div>
 
         {/* Contact info */}
         <div className="mt-6 p-4 bg-gray-50 rounded-xl">
           <p className="text-sm text-gray-600 text-center">
-            如需获取激活码，请添加鹏哥微信：
+            {t('activation.contact')}
             <span className="font-semibold text-primary-600">peng_ip</span>
           </p>
         </div>

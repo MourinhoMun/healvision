@@ -115,6 +115,13 @@
   "caseLibrary": {
     "hint": "The Case Library is read-only. You can search and browse cases here, but cannot add or delete. To create a new case, go to the Home page."
   },
+  "activation": {
+    "label": "Enter Activation Code",
+    "placeholder": "Enter activation or recharge code...",
+    "submit": "Activate",
+    "error": "Activation failed, please check your code",
+    "contact": "To get an activation code, add WeChat: "
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
