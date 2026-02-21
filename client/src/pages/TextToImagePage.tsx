@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Sparkles, Loader2, Image as ImageIcon, Info } from 'lucide-react';
 import { generateTextToImage } from '../api/generate';
 import { buildTextToImagePromptClient } from '../lib/promptUtils';
 import { SURGERY_TYPES, BODY_TYPES, GENDERS, AGE_RANGES, ETHNICITIES } from '../lib/constants';
 import { useUiStore } from '../stores/uiStore';
+import { useAuthStore } from '../stores/authStore';
 
 export function TextToImagePage() {
   const { t, i18n } = useTranslation();
@@ -23,7 +24,7 @@ export function TextToImagePage() {
   const [result, setResult] = useState<{ image_url: string } | null>(null);
 
   const handleGeneratePrompt = () => {
-    const p = `Medical photography of a ${gender} ${ethnicity} patient in their ${ageRange}, ${bodyType} body type, who underwent ${surgeryType} surgery, showing recovery status at Day ${dayNumber} post-operation. Clinical photography style, natural lighting, realistic skin texture.${complications ? ` Complications: ${complications}.` : ''}`;
+    const p = `Photorealistic clinical photograph of a ${gender} ${ethnicity} patient in their ${ageRange}, ${bodyType} body type, who underwent ${surgeryType} surgery, showing recovery status at Day ${dayNumber} post-operation. Shot with a DSLR camera in clinical setting, soft diffused lighting. Natural unretouched skin with visible pores, fine hair, subtle color variations, no beauty filters, no skin smoothing. 1024x1024 resolution.${complications ? ` Complications: ${complications}.` : ''}`;
     setPrompt(p);
   };
 
@@ -43,6 +44,7 @@ export function TextToImagePage() {
       });
       setResult(res);
       addToast(t('common.success'), 'success');
+      useAuthStore.getState().checkBalance();
     } catch (err: any) {
       addToast(err.message, 'error');
     } finally {
@@ -54,7 +56,12 @@ export function TextToImagePage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('textToImage.title')}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('textToImage.title')}</h1>
+
+      <div className="flex items-start gap-2 p-3 mb-4 bg-blue-50 text-blue-700 rounded-lg text-xs">
+        <Info size={14} className="mt-0.5 shrink-0" />
+        <span>{t('textToImage.hint')}</span>
+      </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Left: Config */}

@@ -35,7 +35,7 @@ export function Sidebar() {
       >
         <div className="h-14 flex items-center justify-between px-4 border-b border-gray-100">
           <div className={cn("flex items-center gap-2 overflow-hidden", collapsed ? "lg:hidden" : "")}>
-            <span className="text-lg font-bold text-primary-700 truncate">HealVision</span>
+            <span className="text-lg font-bold text-primary-700 truncate">{t('app.title')}</span>
           </div>
           {/* Mobile Close Button */}
           <button

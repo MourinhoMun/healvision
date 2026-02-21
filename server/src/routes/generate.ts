@@ -8,11 +8,12 @@ import { embedWatermark } from '../services/watermark.js';
 import { decrypt } from '../services/encryption.js';
 import fs from 'fs';
 import type { AnalyzeRequest, GenerateRequest, TextToImageRequest } from '@healvision/shared';
+import { licenseCheck } from '../middleware/licenseCheck.js';
 
 const router = Router();
 
 // Analyze source image → return prompt
-router.post('/analyze', async (req, res, next) => {
+router.post('/analyze', licenseCheck('healvision_analyze', 2), async (req, res, next) => {
   try {
     const { image_base64, mime_type, surgery_type, day_number } = req.body as AnalyzeRequest;
 
@@ -29,7 +30,7 @@ router.post('/analyze', async (req, res, next) => {
 });
 
 // Image-to-image generation
-router.post('/generate', async (req, res, next) => {
+router.post('/generate', licenseCheck('healvision_generate', 10), async (req, res, next) => {
   try {
     const body = req.body as GenerateRequest;
 
@@ -94,7 +95,7 @@ router.post('/generate', async (req, res, next) => {
 });
 
 // Text-to-image generation
-router.post('/generate/text-to-image', async (req, res, next) => {
+router.post('/generate/text-to-image', licenseCheck('healvision_generate', 10), async (req, res, next) => {
   try {
     const body = req.body as TextToImageRequest;
     const prompt = body.custom_prompt || buildTextToImagePrompt(body);
@@ -130,7 +131,7 @@ router.post('/generate/text-to-image', async (req, res, next) => {
 });
 
 // Reverse engineering generation
-router.post('/generate/reverse', async (req, res, next) => {
+router.post('/generate/reverse', licenseCheck('healvision_generate', 10), async (req, res, next) => {
   try {
     const { target_image_base64, target_mime_type, surgery_type, case_id, days } = req.body;
 

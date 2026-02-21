@@ -3,6 +3,7 @@ import type { Case, SourceImage, GeneratedImage, Zone } from '@healvision/shared
 import * as casesApi from '../api/cases';
 import * as imagesApi from '../api/images';
 import * as generateApi from '../api/generate';
+import { useAuthStore } from './authStore';
 
 interface WorkbenchState {
   currentCase: (Case & { source_images: SourceImage[]; generated_images: GeneratedImage[] }) | null;
@@ -14,6 +15,7 @@ interface WorkbenchState {
   latestResult: { id: string; image_url: string; thumbnail_url: string } | null;
 
   loadCase: (caseId: string) => Promise<void>;
+  reloadCase: () => Promise<void>;
   selectDay: (day: number) => void;
   setPrompt: (text: string) => void;
   setProtectionZones: (zones: Zone[]) => void;
@@ -34,6 +36,13 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   loadCase: async (caseId: string) => {
     const data = await casesApi.getCase(caseId);
     set({ currentCase: data as any, selectedDay: 0, currentPrompt: '', latestResult: null });
+  },
+
+  reloadCase: async () => {
+    const { currentCase } = get();
+    if (!currentCase) return;
+    const data = await casesApi.getCase(currentCase.id);
+    set({ currentCase: data as any });
   },
 
   selectDay: (day: number) => set({ selectedDay: day, currentPrompt: '', latestResult: null }),
@@ -57,6 +66,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         day_number: selectedDay,
       });
       set({ currentPrompt: result.prompt, isAnalyzing: false });
+      useAuthStore.getState().checkBalance();
     } catch (err) {
       set({ isAnalyzing: false });
       throw err;
@@ -81,6 +91,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       });
 
       set({ latestResult: result, isGenerating: false });
+      useAuthStore.getState().checkBalance();
 
       // Reload case to update generated_images list
       const updated = await casesApi.getCase(currentCase.id);

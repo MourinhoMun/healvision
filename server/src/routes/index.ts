@@ -5,9 +5,11 @@ import generateRouter from './generate.js';
 import tagsRouter from './tags.js';
 import settingsRouter from './settings.js';
 import exportRouter from './export.js';
+import licenseRouter from './license.js';
 
 export const routes = Router();
 
+routes.use('/license', licenseRouter);
 routes.use('/cases', casesRouter);
 routes.use('/images', imagesRouter);
 routes.use('/', generateRouter); // /api/analyze, /api/generate, etc.

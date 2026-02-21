@@ -48,6 +48,8 @@ export function CaseFormDialog({ onClose, onCreated }: Props) {
           </button>
         </div>
 
+        <p className="text-xs text-gray-400 mb-4">{t('case.createHint')}</p>
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('case.name')}</label>

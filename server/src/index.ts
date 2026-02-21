@@ -1,11 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { initDb, startAutoSave } from './db/connection.js';
 import { runMigrations } from './db/migrate.js';
 import { routes } from './routes/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main() {
   // Ensure data directories exist
@@ -34,6 +38,17 @@ async function main() {
 
   // Error handler
   app.use(errorHandler);
+
+  // In production, serve client static files
+  const clientDistPath = path.resolve(__dirname, '../../client/dist');
+  if (fs.existsSync(clientDistPath)) {
+    app.use(express.static(clientDistPath));
+    // SPA fallback: serve index.html for all non-API routes
+    app.get('/{*splat}', (_req, res) => {
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+    console.log(`Serving client from ${clientDistPath}`);
+  }
 
   app.listen(config.port, () => {
     console.log(`HealVision server running on http://localhost:${config.port}`);

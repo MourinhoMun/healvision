@@ -1,7 +1,8 @@
 {
   "app": {
-    "title": "HealVision AI",
-    "subtitle": "康复视界"
+    "title": "100天康复历程AI生成",
+    "subtitle": "康复历程可视化",
+    "disclaimer": "本软件仅供合法用途，用于为用户大致讲解康复过程，请勿用于非法用途。"
   },
   "nav": {
     "home": "首页",
@@ -17,7 +18,8 @@
     "noCases": "暂无案例，点击上方按钮创建",
     "presentation": "演示模式",
     "sourceImages": "张底图",
-    "generatedImages": "张生成图"
+    "generatedImages": "张生成图",
+    "hint": "这里是您的所有案例。点击案例卡片进入工作台编辑，点击「演示」可全屏展示康复过程。"
   },
   "case": {
     "name": "案例名称",
@@ -34,7 +36,8 @@
     "update": "更新",
     "delete": "删除",
     "deleteConfirm": "确定要删除此案例吗？所有相关图片都将被删除。",
-    "edit": "编辑"
+    "edit": "编辑",
+    "createHint": "填写案例基本信息。手术类型和患者信息会帮助 AI 生成更准确的效果图。"
   },
   "workbench": {
     "timeline": "时间轴",
@@ -56,7 +59,22 @@
     "clearZones": "清除保护区",
     "cloneFromImage": "以此为底图新建案例",
     "confirmClone": "确定要以此图为基础创建新案例吗？",
-    "day": "Day"
+    "day": "Day",
+    "batchImport": "批量导入",
+    "selectFolder": "选择文件夹",
+    "folderHint": "选择包含按天分组的底图文件夹（支持子文件夹分天或文件名含天数/日期）",
+    "folderNoImages": "未检测到任何图片，请检查文件夹结构",
+    "folderDetected": "检测到 {{count}} 天的图片：",
+    "folderImageCount": "{{count}} 张图片",
+    "folderConfirm": "确认导入",
+    "folderProgress": "正在上传... ({{current}}/{{total}})",
+    "folderDone": "导入完成，共 {{days}} 天 {{images}} 张图片",
+    "timelineHint": "左侧时间轴显示所有天数。蓝色圆点表示有底图，绿色圆点表示有生成图。点击选择不同天数。",
+    "sourceHint": "底图区：上传该天的实际照片。点击「分析图片」让 AI 识别内容并自动生成提示词。",
+    "promptHint": "提示词区：AI 分析底图后会自动填写提示词，您也可以手动修改来调整生成效果。",
+    "resultHint": "结果区：点击「生成图片」由 AI 根据提示词生成康复效果图。不满意可点击「重新生成」。",
+    "uploadHint": "为指定天数上传底图。Day 0 为手术日，负数为术前，正数为术后天数。",
+    "batchImportHint": "一次性导入整个文件夹的底图。支持按子文件夹分天（如 day0/、day3/）或文件名含天数/日期。"
   },
   "textToImage": {
     "title": "文本生成图像",
@@ -69,13 +87,15 @@
     "complications": "并发症",
     "complicationsPlaceholder": "例如：轻微红肿",
     "generatePrompt": "生成提示词",
-    "generate": "生成图像"
+    "generate": "生成图像",
+    "hint": "无需底图，直接通过文字描述生成康复效果图。选择手术类型、天数等参数后，点击「生成提示词」，再点击「生成图像」。"
   },
   "viewer": {
     "title": "演示模式",
     "exit": "退出演示",
     "noImages": "无生成图片可展示",
-    "selectCase": "选择一个案例开始演示"
+    "selectCase": "选择一个案例开始演示",
+    "hint": "全屏展示康复过程。使用左右箭头键或点击两侧按钮切换图片，按 Esc 退出。"
   },
   "settings": {
     "title": "设置",
@@ -92,6 +112,9 @@
       "save": "保存配置",
       "saved": "配置已保存"
     }
+  },
+  "caseLibrary": {
+    "hint": "案例库为只读浏览模式，可搜索和查看所有案例，但不能在此新增或删除案例。如需新建案例请回到首页。"
   },
   "common": {
     "save": "保存",

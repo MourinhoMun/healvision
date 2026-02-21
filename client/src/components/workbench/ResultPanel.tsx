@@ -36,21 +36,24 @@ export function ResultPanel() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">
-          {t('workbench.result')} - {dayLabel(selectedDay)}
-        </h3>
-        <div className="flex gap-2">
-          {displayImage && (
-            <button
-              onClick={handleDownload}
-              className="p-1.5 text-gray-400 hover:text-gray-600 rounded"
-              title={t('workbench.download')}
-            >
-              <Download size={16} />
-            </button>
-          )}
+      <div className="px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-gray-700">
+            {t('workbench.result')} - {dayLabel(selectedDay)}
+          </h3>
+          <div className="flex gap-2">
+            {displayImage && (
+              <button
+                onClick={handleDownload}
+                className="p-1.5 text-gray-400 hover:text-gray-600 rounded"
+                title={t('workbench.download')}
+              >
+                <Download size={16} />
+              </button>
+            )}
+          </div>
         </div>
+        <p className="text-[10px] text-gray-400 mt-1 leading-tight">{t('workbench.resultHint')}</p>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4 relative">

@@ -99,19 +99,24 @@ async function callGemini(parts: GeminiRequestPart[], responseModalities?: strin
 }
 
 export async function analyzeImage(imageBase64: string, mimeType: string, surgeryType?: string, dayNumber?: number): Promise<string> {
-  let promptText = `You are a medical image analyst specializing in surgical recovery documentation.
-Analyze the following medical/surgical image and provide a detailed description that:
+  let promptText = `You are an expert medical photography analyst specializing in post-surgical recovery documentation.
 
-1. PRESERVES all medical features: wound location, incision type, suture pattern, bruising extent, swelling degree, bandages, drainage, splints
-2. PRESERVES skin texture details: pores, natural discoloration, surgical marks - do NOT beautify
-3. NOTES the identity features WITHOUT describing them in detail (face shape, eye shape, nose shape, hair, background)
+Carefully analyze the provided medical/surgical image. Your goal is to produce a detailed image-generation prompt that captures EVERY medical detail while allowing the identity to change.
 
-Output a structured prompt that could be used to regenerate a similar medical image with a DIFFERENT person's identity but IDENTICAL medical features.`;
+Describe the following in precise detail:
 
-  if (surgeryType) promptText += `\nSurgery type: ${surgeryType}`;
+1. SURGICAL FEATURES: exact wound location and size, incision line shape and length, suture type and spacing, staple positions, steri-strip placement, drain locations, bandage coverage areas, splint or cast details
+2. HEALING STATUS: precise color of bruising (purple, blue-black, yellow-green, faded brown), swelling degree and distribution, edema boundaries, scab formation stage, granulation tissue, wound edge condition
+3. SKIN QUALITIES: natural skin tone and undertone, visible pores, fine wrinkles, moles or freckles near the surgical site, skin sheen (matte vs slightly oily), capillary visibility, goosebumps, body hair
+4. LIGHTING & ANGLE: camera angle, lighting direction, shadow placement, ambient vs direct light, color temperature of lighting
+5. CONTEXT CLUES: clinical setting elements, patient positioning, clothing edges visible, background blur level
+
+Do NOT describe the person's identity (face shape, eye details, etc.) — only note general demographics (approximate age range, skin tone, gender) so they can be reproduced on a different person.`;
+
+  if (surgeryType) promptText += `\n\nKnown surgery type: ${surgeryType}`;
   if (dayNumber !== undefined) promptText += `\nRecovery day: Day ${dayNumber}`;
 
-  promptText += `\n\nFormat your response as a single detailed image generation prompt in English.`;
+  promptText += `\n\nOutput a single, flowing image-generation prompt in English. The prompt should read naturally and include all the observed details so that a generative model can recreate the same medical scene on a completely different person with photorealistic, natural results. Emphasize natural skin texture — visible pores, subtle imperfections, real lighting — and avoid any wording that could cause beautification or smoothing.`;
 
   const parts: GeminiRequestPart[] = [
     { text: promptText },
@@ -125,15 +130,16 @@ Output a structured prompt that could be used to regenerate a similar medical im
 }
 
 export async function generateImage(prompt: string, sourceImageBase64?: string, sourceMimeType?: string): Promise<{ imageBase64: string; mimeType: string }> {
-  const generationPrompt = `Generate a high-quality medical photography image based on the following description.
-CRITICAL REQUIREMENTS:
-- This is for medical documentation purposes
-- DO NOT apply any beauty filters or skin smoothing
-- PRESERVE realistic skin texture, pores, and imperfections
-- Medical features (wounds, scars, bruising, swelling, bandages) must be anatomically accurate
-- The person in the image must be a COMPLETELY DIFFERENT individual from any reference
-- Maintain clinical photography lighting and style
-- Output resolution should be high quality
+  const generationPrompt = `Generate a photorealistic medical photograph based on the description below.
+
+IMAGE REQUIREMENTS:
+- Resolution: 1024 x 1024 pixels
+- Style: clinical documentation photography, as taken by a medical professional with a DSLR camera
+- Lighting: soft, diffused natural or clinical lighting. Subtle shadows that reveal skin texture. Avoid harsh flash or flat lighting
+- Skin: MUST look completely natural and unprocessed — visible pores, fine vellus hair, subtle color variations, natural skin sheen, minor imperfections (small moles, capillaries). Absolutely NO airbrushing, NO beauty filters, NO skin smoothing
+- Medical accuracy: all surgical features (wounds, scars, sutures, bruising, swelling, bandages) must be anatomically correct and stage-appropriate
+- Composition: clinical documentation framing, neutral background, patient positioned naturally
+- The person depicted must be a DIFFERENT individual from any reference image provided — do not copy the identity
 
 Description:
 ${prompt}`;
@@ -145,7 +151,15 @@ ${prompt}`;
       inlineData: { mimeType: sourceMimeType, data: sourceImageBase64 },
     });
     parts[0] = {
-      text: `${generationPrompt}\n\nUse the attached image as a medical reference for wound positioning and healing stage. Generate a NEW person with the SAME medical conditions shown in the reference.`,
+      text: `${generationPrompt}
+
+REFERENCE IMAGE INSTRUCTIONS:
+The attached image is a medical reference. Use it to match:
+- Exact wound positioning, size, and healing stage
+- Bruising color and distribution pattern
+- Swelling degree and affected areas
+- Suture/bandage placement
+Generate a COMPLETELY DIFFERENT person with the SAME medical conditions, same recovery stage, and same photographic style. Maintain natural skin texture throughout.`,
     };
   }
 

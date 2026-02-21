@@ -9,11 +9,13 @@ export function buildTextToImagePromptClient(params: {
   complications?: string;
 }): string {
   const parts = [
-    `Medical photography of a ${params.gender} ${params.ethnicity} patient in their ${params.age_range}`,
+    `Photorealistic clinical photograph of a ${params.gender} ${params.ethnicity} patient in their ${params.age_range}`,
     params.body_type ? `with ${params.body_type} body type` : '',
     `who underwent ${params.surgery_type} surgery`,
     `showing recovery at Day ${params.day_number} post-operation`,
-    'Clinical photography, natural lighting, realistic skin texture, no beauty filters',
+    'Shot with a DSLR camera in clinical setting, soft diffused lighting',
+    'Natural unretouched skin with visible pores, fine hair, subtle color variations, no beauty filters, no skin smoothing',
+    '1024x1024 resolution',
     params.complications ? `Complications: ${params.complications}` : '',
   ].filter(Boolean);
 

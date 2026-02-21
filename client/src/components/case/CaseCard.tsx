@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Image, Presentation, Calendar, Pencil } from 'lucide-react';
+import { Image, Presentation, Calendar, Pencil, Trash2 } from 'lucide-react';
 import type { Case } from '@healvision/shared';
 import { formatDate } from '../../lib/utils';
 
@@ -7,10 +7,12 @@ interface Props {
   caseData: Case;
   onClick: () => void;
   onPresent: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  readOnly?: boolean;
 }
 
-export function CaseCard({ caseData, onClick, onPresent, onEdit }: Props) {
+export function CaseCard({ caseData, onClick, onPresent, onEdit, onDelete, readOnly = false }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -29,13 +31,26 @@ export function CaseCard({ caseData, onClick, onPresent, onEdit }: Props) {
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-gray-900 truncate flex-1">{caseData.name}</h3>
-          <button
-            onClick={(e) => { e.stopPropagation(); onEdit(); }}
-            className="text-gray-400 hover:text-primary-600 p-1 -mr-2 -mt-1 rounded-full hover:bg-gray-100 transition-colors"
-            title={t('case.edit', 'Edit')}
-          >
-            <Pencil size={14} />
-          </button>
+          <div className="flex items-center gap-1 -mr-2 -mt-1">
+            {!readOnly && onEdit && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                className="text-gray-400 hover:text-primary-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                title={t('case.edit', 'Edit')}
+              >
+                <Pencil size={14} />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-red-50 transition-colors"
+                title={t('case.delete', 'Delete')}
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
         {caseData.surgery_type && (

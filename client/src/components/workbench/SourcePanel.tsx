@@ -40,21 +40,24 @@ export function SourcePanel() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700">
-          {t('workbench.sourceImage')} - {dayLabel(selectedDay)}
-        </h3>
-        {sourceImage && (
-          <button
-            onClick={handleClone}
-            disabled={isCloning}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-primary-600 hover:bg-primary-50 rounded-lg text-xs font-medium transition-colors"
-            title={t('workbench.cloneFromImage', 'New Case from Image')}
-          >
-            {isCloning ? <Loader2 size={14} className="animate-spin" /> : <CopyPlus size={14} />}
-            <span className="hidden sm:inline">{t('workbench.cloneFromImage', 'New Case from Image')}</span>
-          </button>
-        )}
+      <div className="px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-gray-700">
+            {t('workbench.sourceImage')} - {dayLabel(selectedDay)}
+          </h3>
+          {sourceImage && (
+            <button
+              onClick={handleClone}
+              disabled={isCloning}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-primary-600 hover:bg-primary-50 rounded-lg text-xs font-medium transition-colors"
+              title={t('workbench.cloneFromImage', 'New Case from Image')}
+            >
+              {isCloning ? <Loader2 size={14} className="animate-spin" /> : <CopyPlus size={14} />}
+              <span className="hidden sm:inline">{t('workbench.cloneFromImage', 'New Case from Image')}</span>
+            </button>
+          )}
+        </div>
+        <p className="text-[10px] text-gray-400 mt-1 leading-tight">{t('workbench.sourceHint')}</p>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4">
