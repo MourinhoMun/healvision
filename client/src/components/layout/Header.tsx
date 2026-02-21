@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, Menu, Coins, Plus } from 'lucide-react';
+import { Globe, Menu, Coins, Plus, ArrowLeft } from 'lucide-react';
 import { useDevMode } from '../../hooks/useDevMode';
 import { DevPasswordDialog } from '../settings/DevPasswordDialog';
 import { useUiStore } from '../../stores/uiStore';
@@ -41,6 +41,14 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-3">
+        <a
+          href="https://pengip.com"
+          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 px-2 py-1.5 rounded-md hover:bg-gray-50"
+        >
+          <ArrowLeft size={15} />
+          <span className="hidden sm:block">{i18n.language === 'zh' ? '返回主页' : 'Home'}</span>
+        </a>
+
         {/* Balance display */}
         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-50 rounded-lg">
           <Coins size={14} className="text-primary-600" />
