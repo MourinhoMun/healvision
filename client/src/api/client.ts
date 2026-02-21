@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '/healvision/api',
   timeout: 120000, // 2 min for AI generation
 });
 
@@ -38,5 +38,7 @@ api.interceptors.response.use(
     return Promise.reject(new Error(message));
   },
 );
+
+export const FILES_BASE = '/healvision/files';
 
 export default api;

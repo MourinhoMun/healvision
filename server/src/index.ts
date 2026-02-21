@@ -31,7 +31,8 @@ async function main() {
   app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
   // Serve generated images as static files
-  app.use('/files/generated', express.static(config.generatedDir));
+  app.use('/healvision/files/generated', express.static(config.generatedDir));
+  app.use('/files/generated', express.static(config.generatedDir)); // dev compat
 
   // API routes
   app.use('/api', routes);

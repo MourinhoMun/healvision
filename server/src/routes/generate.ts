@@ -10,6 +10,7 @@ import fs from 'fs';
 import type { AnalyzeRequest, GenerateRequest, TextToImageRequest } from '@healvision/shared';
 import { licenseCheck } from '../middleware/licenseCheck.js';
 import { userAuth } from '../middleware/userAuth.js';
+import { config } from '../config.js';
 
 const router = Router();
 
@@ -88,8 +89,8 @@ router.post('/generate', licenseCheck('healvision_generate', 10), async (req, re
 
     res.json({
       id: imageId,
-      image_url: `/files/generated/${imageId}.jpg`,
-      thumbnail_url: `/files/generated/${imageId}_thumb.jpg`,
+      image_url: `${config.filesBase}/generated/${imageId}.jpg`,
+      thumbnail_url: `${config.filesBase}/generated/${imageId}_thumb.jpg`,
       prompt_used: body.prompt,
     });
   } catch (err) {
@@ -124,8 +125,8 @@ router.post('/generate/text-to-image', licenseCheck('healvision_generate', 10), 
 
     res.json({
       id: imageId,
-      image_url: `/files/generated/${imageId}.jpg`,
-      thumbnail_url: `/files/generated/${imageId}_thumb.jpg`,
+      image_url: `${config.filesBase}/generated/${imageId}.jpg`,
+      thumbnail_url: `${config.filesBase}/generated/${imageId}_thumb.jpg`,
       prompt_used: prompt,
     });
   } catch (err) {
@@ -167,8 +168,8 @@ router.post('/generate/reverse', licenseCheck('healvision_generate', 10), async 
       results.push({
         id: imageId,
         day_number: day,
-        image_url: `/files/generated/${imageId}.jpg`,
-        thumbnail_url: `/files/generated/${imageId}_thumb.jpg`,
+        image_url: `${config.filesBase}/generated/${imageId}.jpg`,
+        thumbnail_url: `${config.filesBase}/generated/${imageId}_thumb.jpg`,
         prompt_used: prompt,
       });
     }

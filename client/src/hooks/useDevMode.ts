@@ -6,7 +6,7 @@ const CLICK_TIMEOUT = 3000; // 3 seconds
 export function useDevMode() {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const clickCountRef = useRef(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleLogoClick = useCallback(() => {
     clickCountRef.current++;

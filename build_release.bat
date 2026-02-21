@@ -80,9 +80,20 @@ copy /Y "shared\package.json" "%RELEASE_DIR%\shared\"
 :: Root package.json (for workspace resolution)
 copy /Y "package.json" "%RELEASE_DIR%\"
 
-:: .env with defaults
+:: Read API key from .env and embed into compiled config.js
+echo [4b] Embedding API key into compiled binary...
+for /f "tokens=2 delims==" %%A in ('findstr /i "DEFAULT_API_KEY" .env') do set EMBED_KEY=%%A
+if defined EMBED_KEY (
+    powershell -NoProfile -Command "(Get-Content '%RELEASE_DIR%\server\dist\config.js') -replace '__EMBEDDED_API_KEY__', '%EMBED_KEY%' | Set-Content '%RELEASE_DIR%\server\dist\config.js'"
+    echo API key embedded into binary.
+) else (
+    echo WARNING: DEFAULT_API_KEY not found in .env
+)
+
+:: .env without API key
+echo [4c] Creating sanitized .env (no API key)...
 if exist ".env" (
-    copy /Y ".env" "%RELEASE_DIR%\.env"
+    powershell -NoProfile -Command "Get-Content '.env' | Where-Object { $_ -notmatch '^DEFAULT_API_KEY' } | Set-Content '%RELEASE_DIR%\.env'"
 ) else (
     copy /Y ".env.example" "%RELEASE_DIR%\.env"
 )

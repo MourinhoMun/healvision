@@ -5,6 +5,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getCase } from '../api/cases';
 import type { GeneratedImage } from '@healvision/shared';
 import { dayLabel } from '../lib/utils';
+import { FILES_BASE } from '../api/client';
 
 export function ViewerPage() {
   const { t } = useTranslation();
@@ -64,7 +65,7 @@ export function ViewerPage() {
       {/* Image */}
       <div className="flex-1 flex items-center justify-center p-8">
         <img
-          src={`/files/generated/${current.id}.jpg`}
+          src={`${FILES_BASE}/generated/${current.id}.jpg`}
           alt={`Day ${current.day_number}`}
           className="max-w-full max-h-full object-contain"
         />

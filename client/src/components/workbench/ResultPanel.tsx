@@ -3,6 +3,7 @@ import { Image as ImageIcon, Download, RefreshCw, Loader2, Sparkles } from 'luci
 import { useWorkbenchStore } from '../../stores/workbenchStore';
 import { useUiStore } from '../../stores/uiStore';
 import { dayLabel } from '../../lib/utils';
+import { FILES_BASE } from '../../api/client';
 
 export function ResultPanel() {
   const { t } = useTranslation();
@@ -32,7 +33,7 @@ export function ResultPanel() {
   };
 
   const displayImage = latestResult?.image_url
-    || (generatedForDay.length > 0 ? `/files/generated/${(generatedForDay[0] as any).id}.jpg` : null);
+    || (generatedForDay.length > 0 ? `${FILES_BASE}/generated/${(generatedForDay[0] as any).id}.jpg` : null);
 
   return (
     <div className="h-full flex flex-col">
@@ -105,9 +106,9 @@ export function ResultPanel() {
           {generatedForDay.map((img: any) => (
             <img
               key={img.id}
-              src={`/files/generated/${img.id}_thumb.jpg`}
+              src={`${FILES_BASE}/generated/${img.id}_thumb.jpg`}
               className="w-12 h-12 rounded border border-gray-200 object-cover cursor-pointer hover:border-primary-400"
-              onClick={() => useWorkbenchStore.setState({ latestResult: { id: img.id, image_url: `/files/generated/${img.id}.jpg`, thumbnail_url: `/files/generated/${img.id}_thumb.jpg` } })}
+              onClick={() => useWorkbenchStore.setState({ latestResult: { id: img.id, image_url: `${FILES_BASE}/generated/${img.id}.jpg`, thumbnail_url: `${FILES_BASE}/generated/${img.id}_thumb.jpg` } })}
             />
           ))}
         </div>

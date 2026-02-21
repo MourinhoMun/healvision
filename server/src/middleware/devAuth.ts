@@ -2,13 +2,11 @@ import type { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import { queryOne } from '../db/wrapper.js';
 
-const activeSessions = new Map<string, number>(); // token -> expiry timestamp
-const SESSION_TTL = 30 * 60 * 1000; // 30 minutes
+const activeSessions = new Map<string, number>();
+const SESSION_TTL = 30 * 60 * 1000;
 
 export function verifyDevPassword(password: string): string | null {
-  const db = getDb();
-  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get('dev_password_hash') as { value: string } | undefined;
-
+  const row = queryOne('SELECT value FROM settings WHERE key = ?', ['dev_password_hash']) as { value: string } | undefined;
   if (!row) return null;
 
   const hash = crypto.createHash('sha256').update(password).digest('hex');
@@ -33,7 +31,6 @@ export function devAuth(req: Request, res: Response, next: NextFunction) {
     return;
   }
 
-  // Refresh session
   activeSessions.set(token, Date.now() + SESSION_TTL);
   next();
 }
