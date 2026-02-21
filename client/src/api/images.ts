@@ -17,11 +17,11 @@ export async function getImageBase64(imageId: string): Promise<{ base64: string;
 }
 
 export function getImageUrl(imageId: string): string {
-  return `/api/images/${imageId}`;
+  return `/healvision/api/images/${imageId}`;
 }
 
 export function getThumbnailUrl(imageId: string): string {
-  return `/api/images/${imageId}/thumbnail`;
+  return `/healvision/api/images/${imageId}/thumbnail`;
 }
 
 export async function updateImage(imageId: string, body: { day_number?: number; protection_zones?: any[] }): Promise<any> {

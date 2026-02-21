@@ -1,5 +1,6 @@
 import initSqlJs, { type Database } from 'sql.js';
 import fs from 'fs';
+import path from 'path';
 import { config } from '../config.js';
 
 let db: Database;
@@ -7,9 +8,10 @@ let db: Database;
 export async function initDb(): Promise<Database> {
   if (db) return db;
 
+  fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
+
   const SQL = await initSqlJs();
 
-  // Load existing database file if it exists
   if (fs.existsSync(config.dbPath)) {
     const buffer = fs.readFileSync(config.dbPath);
     db = new SQL.Database(buffer);
@@ -17,25 +19,20 @@ export async function initDb(): Promise<Database> {
     db = new SQL.Database();
   }
 
-  // Enable foreign keys
   db.run('PRAGMA foreign_keys = ON');
-
   return db;
 }
 
 export function getDb(): Database {
-  if (!db) throw new Error('Database not initialized. Call initDb() first.');
+  if (!db) throw new Error('Database not initialized.');
   return db;
 }
 
 export function saveDb() {
   if (!db) return;
-  const data = db.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(config.dbPath, buffer);
+  fs.writeFileSync(config.dbPath, Buffer.from(db.export()));
 }
 
-// Auto-save periodically
 let saveInterval: ReturnType<typeof setInterval>;
 export function startAutoSave(intervalMs = 5000) {
   saveInterval = setInterval(() => saveDb(), intervalMs);
