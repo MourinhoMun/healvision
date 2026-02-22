@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Loader2, Image as ImageIcon, Info } from 'lucide-react';
 import { generateTextToImage } from '../api/generate';
-import { buildTextToImagePromptClient } from '../lib/promptUtils';
 import { SURGERY_TYPES, BODY_TYPES, GENDERS, AGE_RANGES, ETHNICITIES } from '../lib/constants';
 import { useUiStore } from '../stores/uiStore';
 import { useAuthStore } from '../stores/authStore';
@@ -19,25 +18,10 @@ export function TextToImagePage() {
   const [ethnicity, setEthnicity] = useState('asian');
   const [bodyType, setBodyType] = useState('normal');
   const [complications, setComplications] = useState('');
-  const [prompt, setPrompt] = useState('');
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<{ image_url: string } | null>(null);
 
-  const handleGeneratePrompt = () => {
-    const p = buildTextToImagePromptClient({
-      surgery_type: surgeryType,
-      day_number: dayNumber,
-      gender,
-      age_range: ageRange,
-      ethnicity,
-      body_type: bodyType,
-      complications: complications || undefined,
-    });
-    setPrompt(p);
-  };
-
   const handleGenerate = async () => {
-    if (!prompt) return;
     setGenerating(true);
     try {
       const res = await generateTextToImage({
@@ -48,7 +32,6 @@ export function TextToImagePage() {
         ethnicity,
         body_type: bodyType,
         complications: complications || undefined,
-        custom_prompt: prompt,
       });
       setResult(res);
       addToast(t('common.success'), 'success');
@@ -121,18 +104,40 @@ export function TextToImagePage() {
           </div>
 
           <div className="bg-white rounded-lg border p-5">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 mb-3">
               <label className="text-sm font-medium text-gray-700">{t('workbench.promptEditor')}</label>
-              <button onClick={handleGeneratePrompt}
-                className="text-xs text-primary-600 hover:text-primary-700 font-medium">
-                {t('textToImage.generatePrompt')}
-              </button>
+              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">AI 参数摘要</span>
             </div>
-            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)}
-              className="w-full h-32 resize-none border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder={t('workbench.promptPlaceholder')} />
-            <button onClick={handleGenerate} disabled={generating || !prompt}
-              className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 disabled:opacity-50">
+            <div className="space-y-2 text-sm text-gray-700">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 w-16 shrink-0">手术</span>
+                <span className="font-medium">{SURGERY_TYPES.find(s => s.value === surgeryType)?.[isZh ? 'label_zh' : 'label_en'] ?? surgeryType}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 w-16 shrink-0">患者</span>
+                <span className="font-medium">
+                  {ETHNICITIES.find(e => e.value === ethnicity)?.[isZh ? 'label_zh' : 'label_en']} · {GENDERS.find(g => g.value === gender)?.[isZh ? 'label_zh' : 'label_en']} · {ageRange}
+                </span>
+              </div>
+              {bodyType && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 w-16 shrink-0">体型</span>
+                  <span className="font-medium">{BODY_TYPES.find(b => b.value === bodyType)?.[isZh ? 'label_zh' : 'label_en'] ?? bodyType}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 w-16 shrink-0">术后天数</span>
+                <span className="font-medium">第 {dayNumber} 天</span>
+              </div>
+              {complications && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 w-16 shrink-0">并发症</span>
+                  <span className="font-medium text-red-500">{complications}</span>
+                </div>
+              )}
+            </div>
+            <button onClick={handleGenerate} disabled={generating}
+              className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 disabled:opacity-50">
               {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
               {t('textToImage.generate')}
             </button>
