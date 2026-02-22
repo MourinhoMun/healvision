@@ -24,7 +24,15 @@ export function TextToImagePage() {
   const [result, setResult] = useState<{ image_url: string } | null>(null);
 
   const handleGeneratePrompt = () => {
-    const p = `Photorealistic clinical photograph of a ${gender} ${ethnicity} patient in their ${ageRange}, ${bodyType} body type, who underwent ${surgeryType} surgery, showing recovery status at Day ${dayNumber} post-operation. Shot with a DSLR camera in clinical setting, soft diffused lighting. Natural unretouched skin with visible pores, fine hair, subtle color variations, no beauty filters, no skin smoothing. 1024x1024 resolution.${complications ? ` Complications: ${complications}.` : ''}`;
+    const p = buildTextToImagePromptClient({
+      surgery_type: surgeryType,
+      day_number: dayNumber,
+      gender,
+      age_range: ageRange,
+      ethnicity,
+      body_type: bodyType,
+      complications: complications || undefined,
+    });
     setPrompt(p);
   };
 
