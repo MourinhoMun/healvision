@@ -15,26 +15,26 @@ interface AuthState {
 }
 
 function getOrCreateDeviceId(): string {
-  let id = localStorage.getItem('hv_device_id');
+  let id = localStorage.getItem('pengip_device_id');
   if (!id) {
     id = crypto.randomUUID();
-    localStorage.setItem('hv_device_id', id);
+    localStorage.setItem('pengip_device_id', id);
   }
   return id;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  token: localStorage.getItem('hv_token'),
+  token: localStorage.getItem('pengip_token'),
   deviceId: getOrCreateDeviceId(),
   balance: 0,
-  isActivated: !!localStorage.getItem('hv_token'),
+  isActivated: !!localStorage.getItem('pengip_token'),
   loading: false,
 
   activate: async (code: string) => {
     const { deviceId } = get();
     const res = await activateApi(code, deviceId);
     if (res.token) {
-      localStorage.setItem('hv_token', res.token);
+      localStorage.setItem('pengip_token', res.token);
       set({ token: res.token, balance: res.balance, isActivated: true });
     }
   },
@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (res.balance !== undefined) {
       set({ balance: res.balance });
       if (res.token) {
-        localStorage.setItem('hv_token', res.token);
+        localStorage.setItem('pengip_token', res.token);
         set({ token: res.token, isActivated: true });
       }
     }
@@ -62,12 +62,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: () => {
-    localStorage.removeItem('hv_token');
+    localStorage.removeItem('pengip_token');
     set({ token: null, balance: 0, isActivated: false });
   },
 
   init: () => {
-    const token = localStorage.getItem('hv_token');
+    const token = localStorage.getItem('pengip_token');
     if (token) {
       set({ token, isActivated: true });
       get().checkBalance();

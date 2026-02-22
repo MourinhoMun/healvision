@@ -7,7 +7,7 @@ const api = axios.create({
 
 // Request interceptor: attach Authorization header
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('hv_token');
+  const token = localStorage.getItem('pengip_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,7 +23,7 @@ api.interceptors.response.use(
 
     if (status === 401 || status === 403) {
       // Token invalid, clear and reload to show activation page
-      localStorage.removeItem('hv_token');
+      localStorage.removeItem('pengip_token');
       window.location.reload();
       return Promise.reject(new Error('授权已失效，请重新激活'));
     }
