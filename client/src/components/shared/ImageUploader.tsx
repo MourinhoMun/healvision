@@ -14,7 +14,7 @@ async function readExifDate(file: File): Promise<Date | null> {
 }
 
 // ── 从字符串中解析日期（YYYY-MM-DD / YYYY.MM.DD / YYYYMMDD）─────────────
-function parseDate(str: string): Date | null {
+export function parseDate(str: string): Date | null {
   const dashMatch = str.match(/(\d{4})[-.](\d{1,2})[-.](\d{1,2})/);
   if (dashMatch) {
     const d = new Date(+dashMatch[1], +dashMatch[2] - 1, +dashMatch[3]);
@@ -29,16 +29,17 @@ function parseDate(str: string): Date | null {
 }
 
 // ── 从字符串中解析 dayN 格式天数 ─────────────────────────────────────────
-function parseDayNumber(str: string): number | null {
+export function parseDayNumber(str: string): number | null {
   const match = str.match(/day\s*(-?\d+)/i);
   if (match) return parseInt(match[1]);
-  const pureNum = str.match(/^(-?\d+)$/);
+  // 只匹配最多4位的纯数字（合理的天数范围），避免把 "20250101" 这类日期误识别
+  const pureNum = str.match(/^(-?\d{1,4})$/);
   if (pureNum) return parseInt(pureNum[1]);
   return null;
 }
 
 // ── 把日期数组按最早日期折算为天数差 ─────────────────────────────────────
-function groupByRelativeDay(dateEntries: { file: File; date: Date }[]): Map<number, File[]> {
+export function groupByRelativeDay(dateEntries: { file: File; date: Date }[]): Map<number, File[]> {
   const grouped = new Map<number, File[]>();
   const minTime = Math.min(...dateEntries.map((e) => e.date.getTime()));
   const baseDate = new Date(minTime);

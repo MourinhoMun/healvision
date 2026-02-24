@@ -10,6 +10,10 @@ export default defineConfig(({ command }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
   server: {
     port: 5173,
     proxy: {
