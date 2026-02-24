@@ -2,70 +2,13 @@
 import { useCallback, useRef, useState } from 'react';
 import { Upload, FolderOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import exifr from 'exifr';
 
-// ── EXIF 日期读取（纯原生实现，无需额外依赖） ────────────────────────────
-// 只读文件前 64KB，对大图片也很快
+// ── EXIF 日期读取（支持 JPEG / HEIC / PNG / TIFF / WebP）───────────────────
 async function readExifDate(file: File): Promise<Date | null> {
-  if (!file.type.match(/jpe?g/i) && !file.name.match(/\.jpe?g$/i)) return null;
   try {
-    const buf = await file.slice(0, 65536).arrayBuffer();
-    const v = new DataView(buf);
-    if (v.getUint16(0) !== 0xFFD8) return null; // not JPEG
-
-    let off = 2;
-    while (off + 4 < v.byteLength) {
-      if (v.getUint8(off) !== 0xFF) break;
-      const marker = v.getUint16(off); off += 2;
-      if (marker === 0xFFD9 || marker === 0xFFDA) break; // EOI / SOS
-      const segLen = v.getUint16(off); // includes these 2 bytes
-
-      if (marker === 0xFFE1) { // APP1
-        // 检查 "Exif\0\0" 标头
-        if (
-          segLen > 10 &&
-          v.getUint8(off + 2) === 0x45 && v.getUint8(off + 3) === 0x78 &&
-          v.getUint8(off + 4) === 0x69 && v.getUint8(off + 5) === 0x66 &&
-          v.getUint8(off + 6) === 0x00 && v.getUint8(off + 7) === 0x00
-        ) {
-          const t = off + 8; // TIFF header 起点
-          const le = v.getUint16(t) === 0x4949; // 字节序
-          const r16 = (o: number) => v.getUint16(t + o, le);
-          const r32 = (o: number) => v.getUint32(t + o, le);
-          if (r16(2) !== 0x002A) { off += segLen; continue; } // TIFF magic
-
-          // IFD0：找 ExifIFD 指针（tag 0x8769）
-          const ifd0Off = r32(4);
-          const ifd0Count = r16(ifd0Off);
-          let exifIFDOff = -1;
-          for (let i = 0; i < ifd0Count; i++) {
-            const e = ifd0Off + 2 + i * 12;
-            if (r16(e) === 0x8769) { exifIFDOff = r32(e + 8); break; }
-          }
-
-          if (exifIFDOff >= 0) {
-            const exifCount = r16(exifIFDOff);
-            for (let i = 0; i < exifCount; i++) {
-              const e = exifIFDOff + 2 + i * 12;
-              if (r16(e) === 0x9003) { // DateTimeOriginal
-                const valOff = r32(e + 8);
-                let s = '';
-                for (let j = 0; j < 19; j++) {
-                  const c = v.getUint8(t + valOff + j);
-                  if (!c) break;
-                  s += String.fromCharCode(c);
-                }
-                // 格式: "YYYY:MM:DD HH:MM:SS"
-                const m = s.match(/^(\d{4}):(\d{2}):(\d{2})/);
-                if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
-              }
-            }
-          }
-        }
-        break; // APP1 处理完毕，不再继续
-      }
-
-      off += segLen; // 跳过本 segment
-    }
+    const result = await exifr.parse(file, ['DateTimeOriginal']);
+    if (result?.DateTimeOriginal instanceof Date) return result.DateTimeOriginal;
   } catch { /* ignore */ }
   return null;
 }

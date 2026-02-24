@@ -81,8 +81,8 @@
     "folderTipMethod2Title": "Option ②  Name subfolders by date",
     "folderTipMethod2Desc": "The earliest date becomes Day 0. Others are assigned by how many days later they are.",
     "folderTipMethod2Example": "2025-01-01 /　2025-01-04 /　20250115 /",
-    "folderTipMethod3Title": "Option ③  Just drop the photos in — JPG only",
-    "folderTipMethod3Desc": "The app reads the capture date stored in the photo. Earliest photo = Day 0, the rest follow automatically. ⚠️ JPEG only. iPhone shoots HEIC by default — go to Settings → Camera → Formats → Most Compatible first, or use Option ① or ②.",
+    "folderTipMethod3Title": "Option ③  Just drop the photos in — no renaming needed",
+    "folderTipMethod3Desc": "The app reads the capture date stored in the photo (supports JPG and iPhone HEIC). Earliest photo = Day 0, the rest follow automatically.",
     "folderTipDayNote": "📌  Day 0 = surgery day　Negative (day-1) = pre-op　Positive (day3, day14) = post-op"
   },
   "textToImage": {

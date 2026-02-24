@@ -82,8 +82,8 @@
     "folderTipMethod2Title": "方式② 子文件夹用日期命名",
     "folderTipMethod2Desc": "最早一天自动算作 Day 0，其余按日期差依次推算",
     "folderTipMethod2Example": "2025-01-01 /　2025-01-04 /　20250115 /",
-    "folderTipMethod3Title": "方式③ 照片直接放进来，不用改名（仅限 JPG）",
-    "folderTipMethod3Desc": "软件自动读取照片内嵌的拍摄日期，最早那张为 Day 0，其余自动排好。⚠️ 仅支持 JPG 格式；iPhone 默认拍摄格式为 HEIC，请先在「设置 → 相机 → 格式」改为「兼容性最佳」，或改用方式①②。",
+    "folderTipMethod3Title": "方式③ 照片直接放进来，不用改名",
+    "folderTipMethod3Desc": "软件自动读取手机/相机拍照时记录的日期（支持 JPG 和 iPhone HEIC 格式），最早那张为 Day 0，其余自动排好。",
     "folderTipDayNote": "📌  Day 0 = 手术当天　负数（day-1）= 术前　正数（day3、day14）= 术后"
   },
   "textToImage": {
