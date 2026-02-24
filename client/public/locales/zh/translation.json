@@ -74,7 +74,17 @@
     "promptHint": "提示词区：AI 分析底图后会自动填写提示词，您也可以手动修改来调整生成效果。",
     "resultHint": "结果区：点击「生成图片」由 AI 根据提示词生成康复效果图。不满意可点击「重新生成」。",
     "uploadHint": "为指定天数上传底图。Day 0 为手术日，负数为术前，正数为术后天数。",
-    "batchImportHint": "一次性导入整个文件夹的底图。支持按子文件夹分天（如 day0/、day3/）或文件名含天数/日期。"
+    "batchImportHint": "一次性导入整个文件夹的底图。支持按子文件夹分天（如 day0/、day3/）或文件名含天数/日期。",
+    "folderTipsTitle": "照片怎么整理？软件会自动识别",
+    "folderTipMethod1Title": "方式① 子文件夹按天命名（推荐）",
+    "folderTipMethod1Desc": "把照片分别放进以天数命名的文件夹，软件自动对应",
+    "folderTipMethod1Example": "day-1 /　day0 /　day3 /　day14 /",
+    "folderTipMethod2Title": "方式② 子文件夹用日期命名",
+    "folderTipMethod2Desc": "最早一天自动算作 Day 0，其余按日期差依次推算",
+    "folderTipMethod2Example": "2025-01-01 /　2025-01-04 /　20250115 /",
+    "folderTipMethod3Title": "方式③ 照片直接放进来，不用改名",
+    "folderTipMethod3Desc": "软件自动读取手机/相机拍照时记录的日期，最早那张为 Day 0，其余自动排好",
+    "folderTipDayNote": "📌  Day 0 = 手术当天　负数（day-1）= 术前　正数（day3、day14）= 术后"
   },
   "textToImage": {
     "title": "文本生成图像",

@@ -142,7 +142,34 @@ export function WorkbenchPage() {
 
       {showFolderImport && (
         <div className="mb-4 p-4 bg-white rounded-lg border">
-          <p className="text-xs text-gray-400 mb-3">{t('workbench.batchImportHint')}</p>
+
+          {/* 使用说明卡片 */}
+          <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-xs text-gray-700">
+            <p className="mb-2 font-semibold text-blue-700">{t('workbench.folderTipsTitle')}</p>
+            <div className="space-y-2.5">
+
+              <div>
+                <p className="font-medium text-gray-800">{t('workbench.folderTipMethod1Title')}</p>
+                <p className="text-gray-500">{t('workbench.folderTipMethod1Desc')}</p>
+                <p className="mt-0.5 font-mono text-blue-600">{t('workbench.folderTipMethod1Example')}</p>
+              </div>
+
+              <div>
+                <p className="font-medium text-gray-800">{t('workbench.folderTipMethod2Title')}</p>
+                <p className="text-gray-500">{t('workbench.folderTipMethod2Desc')}</p>
+                <p className="mt-0.5 font-mono text-blue-600">{t('workbench.folderTipMethod2Example')}</p>
+              </div>
+
+              <div>
+                <p className="font-medium text-gray-800">{t('workbench.folderTipMethod3Title')}</p>
+                <p className="text-gray-500">{t('workbench.folderTipMethod3Desc')}</p>
+              </div>
+
+              <p className="border-t border-blue-100 pt-2 text-blue-700">
+                {t('workbench.folderTipDayNote')}
+              </p>
+            </div>
+          </div>
           {!folderPreview && !folderUploading && (
             <ImageUploader
               onUpload={() => {}}

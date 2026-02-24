@@ -73,7 +73,17 @@
     "promptHint": "Prompt area: AI fills this after analyzing. You can manually edit it to adjust the generation result.",
     "resultHint": "Result area: Click \"Generate\" to create an AI recovery image from the prompt. Click \"Re-roll\" to try again.",
     "uploadHint": "Upload source images for a specific day. Day 0 is surgery day, negative numbers are pre-op, positive are post-op days.",
-    "batchImportHint": "Import an entire folder of source images at once. Supports subfolders by day (e.g. day0/, day3/) or filenames with day numbers/dates."
+    "batchImportHint": "Import an entire folder of source images at once. Supports subfolders by day (e.g. day0/, day3/) or filenames with day numbers/dates.",
+    "folderTipsTitle": "How to organize your photos — the app figures it out automatically",
+    "folderTipMethod1Title": "Option ①  Name subfolders by day (recommended)",
+    "folderTipMethod1Desc": "Put photos into folders named by day number. The app maps them automatically.",
+    "folderTipMethod1Example": "day-1 /　day0 /　day3 /　day14 /",
+    "folderTipMethod2Title": "Option ②  Name subfolders by date",
+    "folderTipMethod2Desc": "The earliest date becomes Day 0. Others are assigned by how many days later they are.",
+    "folderTipMethod2Example": "2025-01-01 /　2025-01-04 /　20250115 /",
+    "folderTipMethod3Title": "Option ③  Just drop the photos in — no renaming needed",
+    "folderTipMethod3Desc": "The app reads the capture date stored by your phone or camera. Earliest photo = Day 0, the rest follow automatically.",
+    "folderTipDayNote": "📌  Day 0 = surgery day　Negative (day-1) = pre-op　Positive (day3, day14) = post-op"
   },
   "textToImage": {
     "title": "Text to Image",
