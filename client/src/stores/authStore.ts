@@ -11,7 +11,7 @@ interface AuthState {
   recharge: (code: string) => Promise<void>;
   checkBalance: () => Promise<void>;
   logout: () => void;
-  init: () => void;
+  init: () => Promise<void>;
 }
 
 function getOrCreateDeviceId(): string {
@@ -66,11 +66,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ token: null, balance: 0, isActivated: false });
   },
 
-  init: () => {
+  init: async () => {
+    set({ loading: true });
+    // 优先尝试从主站 cookie 换取新 token（同域请求，cookie 自动携带）
+    try {
+      const res = await fetch('/api/v1/user/token');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token) {
+          localStorage.setItem('pengip_token', data.token);
+          set({
+            token: data.token,
+            balance: data.user?.balance ?? 0,
+            isActivated: true,
+            loading: false,
+          });
+          return;
+        }
+      }
+    } catch { /* 主站不可达时降级 */ }
+
+    // 降级：使用本地已存 token
     const token = localStorage.getItem('pengip_token');
     if (token) {
-      set({ token, isActivated: true });
+      set({ token, isActivated: true, loading: false });
       get().checkBalance();
+    } else {
+      set({ loading: false });
     }
   },
 }));
