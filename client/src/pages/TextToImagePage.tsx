@@ -5,6 +5,8 @@ import { generateTextToImage } from '../api/generate';
 import { SURGERY_TYPES, BODY_TYPES, GENDERS, AGE_RANGES, ETHNICITIES } from '../lib/constants';
 import { useUiStore } from '../stores/uiStore';
 import { useAuthStore } from '../stores/authStore';
+import { isAiRejection, parseAiRejection } from '../lib/aiRejection';
+import { AiRejectionGuide } from '../components/shared/AiRejectionGuide';
 
 // 可选天数（覆盖整个 100 天康复周期关键节点）
 const DAY_OPTIONS = [1, 2, 3, 5, 7, 10, 14, 21, 30, 45, 60, 90, 100];
@@ -43,6 +45,7 @@ export function TextToImagePage() {
   const [results, setResults] = useState<ResultItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progressCurrent, setProgressCurrent] = useState(0);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
 
   // ── 垫图处理 ──────────────────────────────────────────────────────
 
@@ -112,9 +115,12 @@ export function TextToImagePage() {
         );
         useAuthStore.getState().checkBalance();
       } catch (err: any) {
+        const errorMsg = isAiRejection(err.message)
+          ? 'AI_REJECTED'
+          : (err.message ?? '生成失败');
         setResults((prev) =>
           prev.map((r) =>
-            r.day === day ? { ...r, status: 'error', error: err.message } : r,
+            r.day === day ? { ...r, status: 'error', error: errorMsg } : r,
           ),
         );
       }
@@ -129,6 +135,9 @@ export function TextToImagePage() {
 
   return (
     <div className="max-w-4xl mx-auto pb-10">
+      {rejectionReason && (
+        <AiRejectionGuide reason={rejectionReason} onClose={() => setRejectionReason(null)} />
+      )}
       <h1 className="text-2xl font-bold text-gray-900 mb-5">100 天康复全程生成</h1>
 
       {/* ────────── 垫图区（突出显示） ────────── */}
@@ -424,10 +433,19 @@ export function TextToImagePage() {
                     </div>
                   ) : status === 'error' ? (
                     <div className="flex flex-col items-center gap-1 px-2 text-center">
-                      <span className="text-2xl">✕</span>
-                      <span className="text-[10px] text-red-400 leading-tight">
-                        {error?.slice(0, 50) ?? '生成失败'}
-                      </span>
+                      <span className="text-2xl">{error === 'AI_REJECTED' ? '🚫' : '✕'}</span>
+                      {error === 'AI_REJECTED' ? (
+                        <button
+                          onClick={() => setRejectionReason('SAFETY')}
+                          className="text-[10px] text-amber-500 underline underline-offset-2 leading-tight hover:text-amber-600"
+                        >
+                          模型拒绝，查看原因及写作指南
+                        </button>
+                      ) : (
+                        <span className="text-[10px] text-red-400 leading-tight">
+                          {error?.slice(0, 50) ?? '生成失败'}
+                        </span>
+                      )}
                     </div>
                   ) : (
                     /* pending */

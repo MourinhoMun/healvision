@@ -33,8 +33,17 @@ interface GeminiResponse {
     content?: {
       parts?: GeminiResponsePart[];
     };
+    finishReason?: string;
   }>;
 }
+
+const REJECTION_REASONS: Record<string, string> = {
+  IMAGE_RECITATION: 'IMAGE_RECITATION',
+  RECITATION: 'RECITATION',
+  SAFETY: 'SAFETY',
+  PROHIBITED_CONTENT: 'PROHIBITED_CONTENT',
+  OTHER: 'OTHER',
+};
 
 /** Extract image data from a response part, handling both camelCase and snake_case */
 function extractInlineData(part: GeminiResponsePart): { mimeType: string; data: string } | undefined {
@@ -126,8 +135,14 @@ Do NOT describe the person's identity (face shape, eye details, etc.) — only n
   ];
 
   const result = await callGemini(parts, undefined, true);
-  const text = result.candidates?.[0]?.content?.parts?.find(p => p.text)?.text;
-  if (!text) throw new Error('No analysis result returned from AI');
+  const candidate = result.candidates?.[0];
+  const text = candidate?.content?.parts?.find(p => p.text)?.text;
+  if (!text) {
+    const reason = candidate?.finishReason && REJECTION_REASONS[candidate.finishReason]
+      ? candidate.finishReason
+      : 'SAFETY';
+    throw new Error(`AI_REJECTED|${reason}|No analysis result returned from AI`);
+  }
   return text;
 }
 
@@ -233,9 +248,13 @@ ${prompt}`,
   }
 
   if (!imageData) {
-    const textParts = candidateParts?.filter(p => p.text).map(p => p.text).join('\n');
-    const debugInfo = textParts ? ` AI responded with text: ${textParts.substring(0, 300)}` : ' No candidates/parts in response.';
-    throw new Error(`No image returned from AI.${debugInfo}`);
+    const candidate = result.candidates?.[0];
+    const reason = candidate?.finishReason && REJECTION_REASONS[candidate.finishReason]
+      ? candidate.finishReason
+      : 'SAFETY';
+    const textParts = candidate?.content?.parts?.filter(p => p.text).map(p => p.text).join('\n');
+    const detail = textParts ? textParts.substring(0, 200) : 'No image returned from AI.';
+    throw new Error(`AI_REJECTED|${reason}|${detail}`);
   }
 
   return {

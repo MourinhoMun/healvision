@@ -1,13 +1,17 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image as ImageIcon, Download, RefreshCw, Loader2, Sparkles } from 'lucide-react';
 import { useWorkbenchStore } from '../../stores/workbenchStore';
 import { useUiStore } from '../../stores/uiStore';
 import { dayLabel } from '../../lib/utils';
 import { FILES_BASE } from '../../api/client';
+import { isAiRejection, parseAiRejection } from '../../lib/aiRejection';
+import { AiRejectionGuide } from '../shared/AiRejectionGuide';
 
 export function ResultPanel() {
   const { t } = useTranslation();
   const addToast = useUiStore((s) => s.addToast);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
   const {
     currentCase, selectedDay, currentPrompt,
     isGenerating, generateImage, latestResult,
@@ -20,7 +24,12 @@ export function ResultPanel() {
       await generateImage();
       addToast(t('common.success'), 'success');
     } catch (err: any) {
-      addToast(err.message, 'error');
+      if (isAiRejection(err.message)) {
+        const { reason } = parseAiRejection(err.message);
+        setRejectionReason(reason);
+      } else {
+        addToast(err.message, 'error');
+      }
     }
   };
 
@@ -37,6 +46,9 @@ export function ResultPanel() {
 
   return (
     <div className="h-full flex flex-col">
+      {rejectionReason && (
+        <AiRejectionGuide reason={rejectionReason} onClose={() => setRejectionReason(null)} />
+      )}
       <div className="px-4 py-3 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-700">

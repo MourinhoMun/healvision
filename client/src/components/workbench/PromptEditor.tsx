@@ -1,12 +1,15 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Loader2, UserSquare2, X } from 'lucide-react';
 import { useWorkbenchStore } from '../../stores/workbenchStore';
 import { useUiStore } from '../../stores/uiStore';
+import { isAiRejection, parseAiRejection } from '../../lib/aiRejection';
+import { AiRejectionGuide } from '../shared/AiRejectionGuide';
 
 export function PromptEditor() {
   const { t } = useTranslation();
   const addToast = useUiStore((s) => s.addToast);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
   const {
     currentCase, selectedDay, currentPrompt, setPrompt,
     isAnalyzing, analyzeCurrentImage,
@@ -21,7 +24,12 @@ export function PromptEditor() {
     try {
       await analyzeCurrentImage();
     } catch (err: any) {
-      addToast(err.message, 'error');
+      if (isAiRejection(err.message)) {
+        const { reason } = parseAiRejection(err.message);
+        setRejectionReason(reason);
+      } else {
+        addToast(err.message, 'error');
+      }
     }
   };
 
@@ -40,6 +48,9 @@ export function PromptEditor() {
 
   return (
     <div className="h-full flex flex-col">
+      {rejectionReason && (
+        <AiRejectionGuide reason={rejectionReason} onClose={() => setRejectionReason(null)} />
+      )}
       <div className="px-4 py-3 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-700">{t('workbench.promptEditor')}</h3>
