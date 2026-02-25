@@ -102,6 +102,9 @@ export interface GenerateRequest {
   day_number: number;
   mode: GenerationMode;
   protection_zones?: Zone[];
+  // 垫图：人像特征参考图（可选），严格保留其面部五官
+  reference_image_base64?: string;
+  reference_mime_type?: string;
 }
 
 export interface TextToImageRequest {
@@ -114,6 +117,9 @@ export interface TextToImageRequest {
   complications?: string;
   custom_prompt?: string;
   case_id?: string;
+  // 垫图：人像特征参考图（可选），严格保留其面部五官
+  reference_image_base64?: string;
+  reference_mime_type?: string;
 }
 
 export interface ReverseEngineerRequest {

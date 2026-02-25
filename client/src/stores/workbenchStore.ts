@@ -13,12 +13,16 @@ interface WorkbenchState {
   isGenerating: boolean;
   protectionZones: Zone[];
   latestResult: { id: string; image_url: string; thumbnail_url: string } | null;
+  // 垫图：人像参考图
+  referenceImageBase64: string | null;
+  referenceMimeType: string | null;
 
   loadCase: (caseId: string) => Promise<void>;
   reloadCase: () => Promise<void>;
   selectDay: (day: number) => void;
   setPrompt: (text: string) => void;
   setProtectionZones: (zones: Zone[]) => void;
+  setReferenceImage: (base64: string | null, mimeType: string | null) => void;
 
   analyzeCurrentImage: () => Promise<void>;
   generateImage: () => Promise<void>;
@@ -32,6 +36,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   isGenerating: false,
   protectionZones: [],
   latestResult: null,
+  referenceImageBase64: null,
+  referenceMimeType: null,
 
   loadCase: async (caseId: string) => {
     const data = await casesApi.getCase(caseId);
@@ -48,6 +54,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   selectDay: (day: number) => set({ selectedDay: day, currentPrompt: '', latestResult: null }),
   setPrompt: (text: string) => set({ currentPrompt: text }),
   setProtectionZones: (zones: Zone[]) => set({ protectionZones: zones }),
+  setReferenceImage: (base64: string | null, mimeType: string | null) =>
+    set({ referenceImageBase64: base64, referenceMimeType: mimeType }),
 
   analyzeCurrentImage: async () => {
     const { currentCase, selectedDay } = get();
@@ -74,7 +82,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
 
   generateImage: async () => {
-    const { currentCase, selectedDay, currentPrompt, protectionZones } = get();
+    const { currentCase, selectedDay, currentPrompt, protectionZones, referenceImageBase64, referenceMimeType } = get();
     if (!currentCase || !currentPrompt) return;
 
     const sourceImg = currentCase.source_images.find((i) => i.day_number === selectedDay);
@@ -88,6 +96,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         day_number: selectedDay,
         mode: sourceImg ? 'image_to_image' : 'text_to_image',
         protection_zones: protectionZones.length > 0 ? protectionZones : undefined,
+        reference_image_base64: referenceImageBase64 ?? undefined,
+        reference_mime_type: referenceMimeType ?? undefined,
       });
 
       set({ latestResult: result, isGenerating: false });

@@ -48,7 +48,7 @@ router.post('/generate', licenseCheck('healvision_generate', 10), async (req, re
       finalPrompt += buildProtectionZoneInstruction(body.protection_zones);
     }
 
-    // Get source image if provided
+    // Get source image (底图) if provided
     let sourceBase64: string | undefined;
     let sourceMime: string | undefined;
     if (body.source_image_id) {
@@ -64,7 +64,15 @@ router.post('/generate', licenseCheck('healvision_generate', 10), async (req, re
       sourceMime = body.source_mime_type || 'image/jpeg';
     }
 
-    const result = await generateImage(finalPrompt, sourceBase64, sourceMime);
+    // Get reference image (垫图) if provided
+    let faceBase64: string | undefined;
+    let faceMime: string | undefined;
+    if (body.reference_image_base64) {
+      faceBase64 = body.reference_image_base64;
+      faceMime = body.reference_mime_type || 'image/jpeg';
+    }
+
+    const result = await generateImage(finalPrompt, sourceBase64, sourceMime, faceBase64, faceMime);
 
     // Apply watermark
     const imageId = uuid();
@@ -104,7 +112,15 @@ router.post('/generate/text-to-image', licenseCheck('healvision_generate', 10), 
     const body = req.body as TextToImageRequest;
     const prompt = body.custom_prompt || buildTextToImagePrompt(body);
 
-    const result = await generateImage(prompt);
+    // Get reference image (垫图) if provided
+    let faceBase64: string | undefined;
+    let faceMime: string | undefined;
+    if (body.reference_image_base64) {
+      faceBase64 = body.reference_image_base64;
+      faceMime = body.reference_mime_type || 'image/jpeg';
+    }
+
+    const result = await generateImage(prompt, undefined, undefined, faceBase64, faceMime);
 
     const imageId = uuid();
 
